@@ -1,0 +1,52 @@
+<div class="latest-statistics">
+	<table>
+		<thead>
+		  <tr>
+		  	<th>Last Updated</th>
+		    <th>1 Min. Average</th>
+		    <th>5 Min. Average</th>
+		    <th>15 Min. Average</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		  	<td>{{date-formatter lastUpdateTimestamp}}</td>
+		    <td>{{min1}}</td>
+		    <td>{{min5}}</td>
+		    <td>{{min15}}</td>
+		  </tr>
+		</tbody>
+	</table>
+
+</div>
+
+{{#if processed}}
+	{{charts/line-chart dataItems=loadData updatePayload=updatePayload}}
+{{else}}
+	{{paper-progress-linear}}
+{{/if}}
+
+
+<div class="abnormal-activity-alerts">
+	<table>
+		<thead>
+			<tr>
+				<th>Timestamp</th>
+				<th>Alert</th>
+				<th>Load (2 min. avg.)</th>
+				<th>Details</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			{{#each alertsList as |alert|}}
+				<tr>
+					<td>{{date-formatter alert.timestamp}}</td>
+					<td>{{alert.type}}</td>
+					<td>{{number-formatter alert.load}}</td>
+					<td>{{alert-details alert}}</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
