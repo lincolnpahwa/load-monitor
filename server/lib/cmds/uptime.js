@@ -5,6 +5,11 @@ Runs `uptime` and process the output.
 
 const Task = require('../task');
 
+const PLATFORM_MAP = {
+  MAC: 'darwin',
+  LINUX: 'linux'
+};
+
 class Uptime extends Task {
   constructor() {
     super('uptime');
@@ -17,15 +22,23 @@ class Uptime extends Task {
     }
     const timestamp = new Date().getTime();
 
-    const uptimeData = stdout.trim().split(',');
+    if (this.platform === PLATFORM_MAP.MAC) {
+      const uptimeData = stdout.trim().split(',');
 
-    const loadAveragesData = uptimeData[uptimeData.length - 1];
+      const loadAveragesData = uptimeData[uptimeData.length - 1];
 
-    const [, loadAverageList] = loadAveragesData.trim().split(':');
+      const [, loadAverageList] = loadAveragesData.trim().split(':');
 
-    const [min1, min5, min15] = loadAverageList.trim().split(' ');
+      const [min1, min5, min15] = loadAverageList.trim().split(' ').map(parseFloat);
 
-    return { stdout, min1: parseFloat(min1), min5: parseFloat(min5), min15: parseFloat(min15), timestamp };
+      return { stdout, min1, min5, min15, timestamp };
+    } else if (this.platform === PLATFORM_MAP.LINUX) {
+      const loadAveragesList = stdout.match(/(\d.\d{2}),\s(\d.\d{2}),\s(\d.\d{2})/g);
+      const [min1, min5, min15] = loadAveragesList[0].split(',').map(parseFloat);
+      return { stdout, min1, min5, min15, timestamp };
+    } else {
+      throw new Error('Unrecognized platform', this.platform);
+    }
   }
 }
 

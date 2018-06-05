@@ -1,5 +1,6 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const os = require('os');
 
 /**
 Generic Task 
@@ -8,6 +9,7 @@ Executes and processes commands assigned to it.
 class Task {
 	constructor(cmd = null) {
 		this.cmd = cmd;
+		this.platform = os.platform();
 	}
 
 	async run() {
@@ -26,6 +28,7 @@ class Task {
 	}
 
 	error(_error) { // handle errors
+		console.error(_error)
 		return _error;
 	}
 }
